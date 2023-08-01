@@ -6,7 +6,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +32,9 @@ public class CapExDetails {
 	@Column(columnDefinition = "serial")
 	private int id;
 
+	
+	@JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
 	@Column(name = "date", nullable = false)
 	private LocalDate date;
 
@@ -46,5 +55,10 @@ public class CapExDetails {
 
 	@Column(name = "mode", nullable = false)
 	private String mode;
-
+	
+	//HRMS-114 -> START
+	@Lob
+	@Column(name = "invoice" )
+	private byte[] invoice;
+	//HRMS-114 -> END
 }

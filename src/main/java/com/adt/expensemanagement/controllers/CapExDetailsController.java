@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,9 +18,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.adt.expensemanagement.models.CapExDetails;
 import com.adt.expensemanagement.services.interfaces.CapExDetailsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/capExDetails")
@@ -28,17 +36,25 @@ public class CapExDetailsController {
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	private CapExDetailsService capExDetailsService;
-
+	private CapExDetailsService capExDetailsService;	
+	
+	//HRMS-114 -> START
 	@PreAuthorize("@auth.allow('ROLE_ADMIN')")
 	@PostMapping("/createCapExDetails")
-	public ResponseEntity<CapExDetails> createCapExDetails(@RequestBody CapExDetails capExDetails,
-			HttpServletRequest request) {
+	public ResponseEntity<String> createCapExDetails(@RequestPart("invoice") MultipartFile invoice,@RequestPart String body,
+			HttpServletRequest request) throws JsonMappingException, JsonProcessingException {
 		LOGGER.info("Expenseservice:capExDetails:createCapExDetails info level log message");
-		CapExDetails details = capExDetailsService.createCapExDetails(capExDetails);
-		return new ResponseEntity<>(details, HttpStatus.OK);
+		ObjectMapper mapper=new ObjectMapper();
+		CapExDetails capExDetails=mapper.readValue(body, CapExDetails.class);
+		CapExDetails details = capExDetailsService.createCapExDetails(invoice,capExDetails);
+
+	    if (body != null) {
+	        return new ResponseEntity<>("Capital Expenses saved Successfully for ID : "+details.getId(), HttpStatus.CREATED);
+	    } else {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
 	}
-	
+	//HRMS-114 -> END
 	//HRMS-107 -> START
 	@PreAuthorize("@auth.allow('ROLE_ADMIN')")
 	@GetMapping("/")
@@ -60,19 +76,22 @@ public class CapExDetailsController {
 	    }
 	}
 
+	//HRMS-114 -> START
 	@PreAuthorize("@auth.allow('ROLE_ADMIN')")
-	@PutMapping("/{id}")
-	public ResponseEntity<CapExDetails> updateCapExDetailsById(@PathVariable int id, @RequestBody CapExDetails capExDetails)
-	{
+	@PutMapping(value = "/UpdateCapExDetails")
+	public ResponseEntity<String> updateCapExDetails(@RequestPart("invoice") MultipartFile invoice , @RequestPart String details) throws JsonMappingException, JsonProcessingException {	
 		LOGGER.info("Expenseservice:capExDetails:updateCapExDetailsById info level log message");
-	    CapExDetails updatedCapExDetails = capExDetailsService.updateCapExDetailsById(id, capExDetails);
+		ObjectMapper mapper=new ObjectMapper();
+		CapExDetails capExDetails=mapper.readValue(details, CapExDetails.class);
+		String updatedCapExDetails = capExDetailsService.updateCapExDetailsById(invoice,capExDetails);
 	    if (updatedCapExDetails != null) {
 	        return new ResponseEntity<>(updatedCapExDetails, HttpStatus.OK);
 	    } else {
 	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	    }
 	}
-
+	//HRMS-114 -> END
+	
 	@PreAuthorize("@auth.allow('ROLE_ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteCapExDetailsById(@PathVariable int id) {
@@ -86,10 +105,5 @@ public class CapExDetailsController {
 	        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
 	    }
 	}
-//	@DeleteMapping("/{id}")
-//	public ResponseEntity<Void> deleteCapExDetailsById(@PathVariable int id) {
-//	    capExDetailsService.deleteCapExDetailsById(id);
-//	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//	}
 	//HRMS-107 -> END
 }
