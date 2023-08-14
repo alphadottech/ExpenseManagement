@@ -1,6 +1,9 @@
 package com.adt.expensemanagement.services.interfaces;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +25,9 @@ public interface CapExDetailsService  {
 
 	    boolean deleteCapExDetailsById(int id);
 		//HRMS-107 -> END
+	    
+		public byte[] downloadCapExDetails(int id, HttpServletResponse resp) throws IOException;
+
 
 }
  

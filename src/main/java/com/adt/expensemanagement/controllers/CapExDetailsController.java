@@ -1,11 +1,13 @@
 package com.adt.expensemanagement.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -104,4 +105,27 @@ public class CapExDetailsController {
 		    }
 		}
 		//HRMS-107 -> END
+		
+		
+		//HRMS-122 -> START
+	//	@PreAuthorize("@auth.allow('ROLE_ADMIN') or @auth.allow('ROLE_USER')")
+			@GetMapping("downloadCapExDetails/{id}")
+			public ResponseEntity<byte[]> downloadCapExDetails(@PathVariable int id, HttpServletResponse resp) throws IOException {
+				LOGGER.info("EmployeeService:EmployeeOperationController:downloadAadhar:AadharCard info level log message");
+
+				return ResponseEntity.ok(capExDetailsService.downloadCapExDetails(id, resp));
+			}
+			//HRMS-122 -> END
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 }
