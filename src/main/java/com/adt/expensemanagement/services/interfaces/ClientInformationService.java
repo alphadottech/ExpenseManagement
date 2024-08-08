@@ -15,10 +15,9 @@ public interface ClientInformationService {
 	//** HRMS-54 END **
 	
 	// ------------** Jira No. HRMS-84 START **-----------
-	public List<ClientInformation> SearchByCompany(String companyName);
-	public List<ClientInformation> SearchByEmail(String email);
-	//------------ ** Jira No. HRMS-84 END **-------------
 
+	//------------ ** Jira No. HRMS-84 END **-------------
+	List<ClientInformation> searchByEmailAndCompanyName(String email, String companyName);
 }
 
 

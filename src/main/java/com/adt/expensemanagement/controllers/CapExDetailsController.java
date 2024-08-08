@@ -92,7 +92,7 @@ public class CapExDetailsController {
 	}
 
 	@PreAuthorize("@auth.allow('DELETE_CAPITAL_EXPENSE_DETAILS_BY_ID')")
-	@DeleteMapping("/{id}")
+	@DeleteMapping("deleteCapExById/{id}")
 	public ResponseEntity<String> deleteCapExDetailsById(@PathVariable int id) {
 		LOGGER.info("Expenseservice:capExDetails:deleteCapExDetailsById info level log message");
 		boolean isDeleted = capExDetailsService.deleteCapExDetailsById(id);

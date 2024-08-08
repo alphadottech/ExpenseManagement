@@ -18,8 +18,10 @@ public interface ClientInformationRepo extends JpaRepository<ClientInformation, 
 	
 	@Query(value= "FROM ClientInformation ci WHERE ci.email like %:query%")
 	List<ClientInformation> findByEmail(@Param("query") String email);
-	
-	//--------------- ** Jira No. HRMS-84 END **---------------------
+
+    List<ClientInformation> findByEmailAndCompanyName(String email, String companyName);
+
+    //--------------- ** Jira No. HRMS-84 END **---------------------
 
 
 }

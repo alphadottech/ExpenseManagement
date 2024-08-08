@@ -80,7 +80,7 @@ public class ClientInformationServiceImplTest {
 				.contactPerson("me").email("jd.adt@gmail.com").gstin("GHJY!23").build();
 		List<ClientInformation> clientInfoList = Collections.singletonList(clientInfo);
 		when(clientInformationRepo.findByCompanyName(clientInfo.getCompanyName())).thenReturn(clientInfoList);
-		assertEquals(clientInfoList, clientInformationServiceImpl.SearchByCompany(clientInfo.getCompanyName()));
+		assertEquals(clientInfoList, clientInformationServiceImpl.searchByEmailAndCompanyName(clientInfo.getCompanyName(),clientInfo.getEmail()));
 	}
 
 	@DisplayName("JUnit test for SearchByEmail method")
@@ -89,7 +89,7 @@ public class ClientInformationServiceImplTest {
 				.contactPerson("me").email("jd.adt@gmail.com").gstin("GHJY!23").build();
 		List<ClientInformation> clientInfoList = Collections.singletonList(clientInfo);
 		when(clientInformationRepo.findByEmail(clientInfo.getEmail())).thenReturn(clientInfoList);
-		assertEquals(clientInfoList, clientInformationServiceImpl.SearchByEmail(clientInfo.getEmail()));
+		assertEquals(clientInfoList, clientInformationServiceImpl.searchByEmailAndCompanyName(clientInfo.getCompanyName(),clientInfo.getEmail()));;
 	}
 
 }

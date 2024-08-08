@@ -69,19 +69,15 @@ public class ClientInformationController {
 		return ResponseEntity.ok(clientInfo);
 	}
 
+	@PreAuthorize("@auth.allow('SEARCH_BY_EMAIL_AND_COMPANY_NAME')")
+	@GetMapping("/searchByEmailAndCompanyName")
+	public ResponseEntity<List<ClientInformation>> searchByEmailAndCompanyName(
+			@RequestParam(value = "email", required = false) String email,
+			@RequestParam(value = "companyName", required = false) String companyName) {
 
-	@PreAuthorize("@auth.allow('SEARCH_CLIENT_BY_COMPANY_NAME')")
-	@GetMapping("/searchByCompany")
-	public ResponseEntity<List<ClientInformation>> SearchByCompany(@RequestParam("query") String companyName) {
-		LOGGER.info("Expense Management: getClientBycompanyName : getClientBycompanyName Info level log message");
-		return ResponseEntity.ok(informationService.SearchByCompany(companyName));
-	}
-	
-	@PreAuthorize("@auth.allow('SEARCH_CLIENT_BY_EMAIL')")
-	@GetMapping("/searchByEmail")
-	public ResponseEntity<List<ClientInformation>> SearchByEmail(@RequestParam("query") String email) {
-		LOGGER.info("Expense Management: getClientByemail : getClientByemail Info level log message");
-		return ResponseEntity.ok(informationService.SearchByEmail(email));
+		LOGGER.info("Expense Management: searchByEmailAndCompanyName Info level log message");
+
+		return ResponseEntity.ok(informationService.searchByEmailAndCompanyName(email, companyName));
 	}
 
 }

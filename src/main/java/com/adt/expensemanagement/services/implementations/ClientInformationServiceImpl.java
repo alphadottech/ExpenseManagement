@@ -1,5 +1,6 @@
 package com.adt.expensemanagement.services.implementations;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -91,17 +92,18 @@ public class ClientInformationServiceImpl implements ClientInformationService {
 
 	// -----------------** Jira No. HRMS-84 START **-------------
 
-	@Override
-	public List<ClientInformation> SearchByCompany(String companyName) {
-		List<ClientInformation> list=informationRepo.findByCompanyName(companyName);
-		return list;
-	}
 
-	@Override
-	public List<ClientInformation> SearchByEmail(String email) {
-		List<ClientInformation> list=informationRepo.findByEmail(email);
-		return list;
-	}
 	//---------- ** Jira No. HRMS-84 END **-----------
-
+	@Override
+	public List<ClientInformation> searchByEmailAndCompanyName(String email, String companyName) {
+		if (email != null && companyName != null) {
+			return informationRepo.findByEmailAndCompanyName(email, companyName);
+		} else if (email != null) {
+			return informationRepo.findByEmail(email);
+		} else if (companyName != null) {
+			return informationRepo.findByCompanyName(companyName);
+		} else {
+			return new ArrayList<>();
+		}
+	}
 }
