@@ -102,7 +102,7 @@
         <table>
            <tr>
              <th>Employee Name</th>
-             <td>${ApplicantName!''}</span></td>
+             <td>${EmployeeName!''}</span></td>
            </tr>
             <tr>
                 <th>Expense Amount</th>

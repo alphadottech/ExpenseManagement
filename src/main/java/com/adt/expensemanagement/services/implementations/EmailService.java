@@ -15,10 +15,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,8 +46,15 @@ public class EmailService implements CommonEmailService {
     @Autowired
     private Auth auth;
 
+    @Value("${email.service.url}")
+    private String emailServiceUrl;
+
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
 
 
     @Override
@@ -57,6 +66,7 @@ public class EmailService implements CommonEmailService {
         Integer empID = expenseItems.getEmpId();
         Optional<User> user = userRepo.findById(empID);
         String userEmail = user.get().getEmail();
+        String employeeName=user.get().getFirstName()+" "+user.get().getLastName();
         mail.setFrom(userEmail);
 
         //*** Get recipient email and generate token ***
@@ -65,11 +75,10 @@ public class EmailService implements CommonEmailService {
         for (Map<String, Object> expenses : ExpenseData) {
            String email = String.valueOf(expenses.get("email_id"));
             String token = auth.tokenGanreate(email);
-
             mail.setTo(email);
             mail.getModel().put("approvalUrl", approveUrl + "?Authorization=" + token);
             mail.getModel().put("rejectionUrl", rejectUrl + "?Authorization=" + token);
-//            mail.getModel().put("ApplicantName",event.getExpenseItems().getPaidBy().toString());
+            mail.getModel().put("EmployeeName",employeeName);
             mail.getModel().put("ExpenseAmount", String.valueOf(event.getExpenseItems().getAmount()));
             mail.getModel().put("ExpenseDate", String.valueOf(event.getExpenseItems().getPaymentDate()));
             mail.getModel().put("ExpensePurpose",event.getExpenseItems().getDescription().toString());
@@ -78,7 +87,10 @@ public class EmailService implements CommonEmailService {
             Template template = templateConfiguration.getTemplate("expense_status_approval.ftl");
             String mailContent = FreeMarkerTemplateUtils.processTemplateIntoString(template, mail.getModel());
             mail.setContent(mailContent);
-            send(mail);
+            String url = emailServiceUrl + "/emails/send";
+            HttpEntity<Mail> request = new HttpEntity<>(mail);
+            restTemplate.postForEntity(url, request, String.class);
+          // send(mail);
         }
     }
 
